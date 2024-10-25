@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blog</title>
+</head>
+<body>
+    <section>
+        <h1>Blog Article Title</h1>
+        <p>Blog article content goes here...</p>
+        <p>Author: John Doe</p>
+    </section>
+    <a href="index.html">Home</a>
+    <script>
+        // Check if user is logged in
+        if (!localStorage.getItem('loggedIn')) {
+            alert('You must be logged in to view this page.');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

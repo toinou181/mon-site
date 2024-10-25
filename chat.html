@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+        </ul>
+    </nav>
+    <section>
+        <form id="pseudoForm">
+            <label for="pseudo">Choose a pseudo:</label>
+            <input type="text" id="pseudo" name="pseudo" required>
+            <button type="submit">Enter Chat</button>
+        </form>
+        <div id="chatInterface" style="display:none;">
+            <div id="chatDisplay"></div>
+            <input type="text" id="messageInput" placeholder="Type your message here...">
+            <button id="sendButton">Send</button>
+        </div>
+    </section>
+    <footer>
+        <p>Connected members: <span id="connectedMembers"></span></p>
+    </footer>
+    <script>
+        const pseudoForm = document.getElementById('pseudoForm');
+        const chatInterface = document.getElementById('chatInterface');
+        const chatDisplay = document.getElementById('chatDisplay');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const connectedMembers = document.getElementById('connectedMembers');
+
+        let pseudo = '';
+        let socket = new WebSocket('ws://your-websocket-server-url');
+
+        pseudoForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            pseudo = document.getElementById('pseudo').value;
+            pseudoForm.style.display = 'none';
+            chatInterface.style.display = 'block';
+            socket.send(JSON.stringify({ type: 'join', pseudo: pseudo }));
+        });
+
+        sendButton.addEventListener('click', function() {
+            const message = messageInput.value;
+            if (message) {
+                socket.send(JSON.stringify({ type: 'message', pseudo: pseudo, message: message }));
+                messageInput.value = '';
+            }
+        });
+
+        socket.addEventListener('message', function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'message') {
+                const messageElement = document.createElement('p');
+                messageElement.textContent = `${data.pseudo}: ${data.message}`;
+                chatDisplay.appendChild(messageElement);
+            } else if (data.type === 'members') {
+                connectedMembers.textContent = data.members.join(', ');
+            }
+        });
+    </script>
+</body>
+</html>
